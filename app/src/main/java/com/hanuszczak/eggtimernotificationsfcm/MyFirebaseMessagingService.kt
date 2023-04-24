@@ -17,6 +17,7 @@
 package com.hanuszczak.eggtimernotificationsfcm
 
 import android.app.NotificationManager
+import android.net.Uri
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.hanuszczak.eggtimernotificationsfcm.util.sendNotification
@@ -43,8 +44,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // TODO Step 3.6 check messages for notification and call sendNotification
         // Check if message contains a notification payload.
         remoteMessage.notification?.let {
+            Log.d(TAG, "Message Notification Title: ${it.title}")
             Log.d(TAG, "Message Notification Body: ${it.body}")
-            sendNotification(it.body!!)
+            Log.d(TAG, "Message Notification ImgUrl: ${it.imageUrl}")
+            sendNotification(it.title!!, it.body!!, it.imageUrl!!)
         }
     }
     // [END receive_message]
@@ -79,14 +82,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     /**
      * Create and show a simple notification containing the received FCM message.
      *
+     * @param messageTitle FCM message body received.
      * @param messageBody FCM message body received.
+     * @param messageImgUrl FCM message body received.
      */
-    private fun sendNotification(messageBody: String) {
+    private fun sendNotification(messageTitle: String, messageBody: String, messageImgUrl: Uri) {
         val notificationManager = ContextCompat.getSystemService(applicationContext, NotificationManager::class.java) as NotificationManager
-        notificationManager.sendNotification(messageBody, applicationContext)
+        notificationManager.sendNotification(messageTitle, messageBody, messageImgUrl, applicationContext)
     }
 
     companion object {
-        private const val TAG = "MyFirebaseMsgService"
+        const val TAG = "MyFirebaseMsgService"
     }
 }

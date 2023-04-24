@@ -20,12 +20,13 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.hanuszczak.eggtimernotificationsfcm.R
 import com.hanuszczak.eggtimernotificationsfcm.util.sendNotification
 
-class AlarmReceiver: BroadcastReceiver() {
+class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         // TODO: Step 1.10 [Optional] remove toast
@@ -36,7 +37,12 @@ class AlarmReceiver: BroadcastReceiver() {
             context,
             NotificationManager::class.java
         ) as NotificationManager
-        notificationManager.sendNotification(context.getText(R.string.eggs_ready).toString(), context)
+        notificationManager.sendNotification(
+            context.getText(R.string.eggs_ready_title).toString(),
+            context.getText(R.string.eggs_ready).toString(),
+            Uri.parse(context.getText(R.string.scrambled_eggs_uri).toString()),
+            context
+        )
     }
 
 }

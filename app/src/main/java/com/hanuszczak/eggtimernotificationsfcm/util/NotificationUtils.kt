@@ -20,11 +20,17 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.hanuszczak.eggtimernotificationsfcm.MainActivity
+import com.hanuszczak.eggtimernotificationsfcm.MyFirebaseMessagingService
 import com.hanuszczak.eggtimernotificationsfcm.R
 import com.hanuszczak.eggtimernotificationsfcm.receiver.SnoozeReceiver
-import android.graphics.BitmapFactory
+import java.io.IOException
+import java.net.URL
 
 // Notification ID.
 private val NOTIFICATION_ID = 0
@@ -35,10 +41,12 @@ private val FLAGS = 0
 /**
  * Builds and delivers the notification.
  *
- * @param messageBody, notification text.
+ * @param messageTitle FCM message body received.
+ * @param messageBody FCM message body received.
+ * @param messageImgUrl FCM message body received.
  * @param context, activity context.
  */
-fun NotificationManager.sendNotification(messageBody: String, applicationContext: Context) {
+fun NotificationManager.sendNotification(messageTitle: String, messageBody: String, messageImgUrl: Uri, applicationContext: Context) {
 
 
     // TODO: Step 1.11 create intent
@@ -53,14 +61,24 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
     )
 
 // TODO: Step 2.0 add style
-    val eggImage = BitmapFactory.decodeResource(
-        applicationContext.resources,
-        R.drawable.cooked_egg
-    )
-    val bigPicStyle = NotificationCompat.BigPictureStyle()
-        .bigPicture(eggImage)
-        .bigLargeIcon(null)
+//    val notificationImage = BitmapFactory.decodeResource(
+//        applicationContext.resources,
+//        R.drawable.cooked_egg
+//    )
+    val notificationImage: Bitmap = try {
+        val url = URL(messageImgUrl.toString())
+        BitmapFactory.decodeStream(url.openConnection().getInputStream())
+    } catch (e: IOException) {
+        Log.e(MyFirebaseMessagingService.TAG, "BitmapFactory.decodeStream: ${e.localizedMessage}")
+        BitmapFactory.decodeResource(
+            applicationContext.resources,
+            R.drawable.cooked_egg
+        )
+    }
 
+    val bigPicStyle = NotificationCompat.BigPictureStyle()
+        .bigPicture(notificationImage)
+        .bigLargeIcon(null)
 
     // TODO: Step 2.2 add snooze action
     val snoozeIntent = Intent(applicationContext, SnoozeReceiver::class.java)
@@ -76,13 +94,13 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
     )
         // TODO: Step 1.3 set title, text and icon to builder
         .setSmallIcon(R.drawable.cooked_egg)
-        .setContentTitle(applicationContext.getString(R.string.notification_title))
+        .setContentTitle(messageTitle)
         .setContentText(messageBody)
         // TODO: Step 1.13 set content intent
         .setContentIntent(contentPendingIntent)
         // TODO: Step 2.1 add style to builder
         .setStyle(bigPicStyle)
-        .setLargeIcon(eggImage)
+        .setLargeIcon(notificationImage)
         // TODO: Step 2.3 add snooze action
         .addAction(
            R.drawable.egg_icon,
