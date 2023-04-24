@@ -1,4 +1,4 @@
-# Egg Timer Notifications 🥚
+# Egg Timer Notification Firebase 🥚
 
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=24)
 
@@ -16,4 +16,4 @@ EggTimer is a timer app for cooking eggs. You can start and stop the timer, choo
 
 ![FCM](images/FCM.png)
 
-![Main Screen](images/fcmNotificaton.gif)
+![Main Screen](images/AppFlowFCM.gif)
